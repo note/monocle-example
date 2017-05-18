@@ -27,8 +27,15 @@ object NaivePrisms {
 }
 
 object DowncastingPrisms {
-  // TODO: change it
-  val stringToIntPrism = Prism[String, Int](str => Try(str.toInt).toOption)(_.toString)
+  val stringToIntPrism = Prism[String, Int]{ str =>
+    println("bazinga: " + str)
+    val regex = "(-?[1-9][0-9]*)|0".r
+    if(regex.pattern.matcher(str).matches) {
+      Try(str.toInt).toOption
+    } else {
+      None
+    }
+  }(_.toString)
   val intToPercentPrism = Prism[Int, Percent](i => Percent.fromInt(i))(_.value)
 }
 
