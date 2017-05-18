@@ -3,32 +3,33 @@ package com.example
 import monocle.Prism
 
 import scala.util.Try
+import scalaz.Equal
+
+case class Percent private (value: Int) {
+  require(value >= 0)
+  require(value <= 100)
+}
+
+object Percent {
+  def fromInt(input: Int): Option[Percent] =
+    if(input >= 0 && input <= 100) {
+      Some(Percent(input))
+    } else {
+      None
+    }
+
+  implicit val equalInstance: Equal[Percent] = (p1: Percent, p2: Percent) => p1 == p2
+}
 
 object NaivePrisms {
-  val stringToDoublePrism = Prism[String, Double](input => {println(s"bazinga: $input"); Try(input.toDouble).toOption})(_.toString)
-  val doubleToIntPrism    = Prism[Double, Int]{
-    case s if s.isValidInt => Some(s.toInt)
-    case _ => None
-  }(_.toDouble)
+  val stringToIntPrism = Prism[String, Int](str => Try(str.toInt).toOption)(_.toString)
+  val intToPercentPrism = Prism[Int, Percent](i => Percent.fromInt(i))(_.value)
 }
 
 object DowncastingPrisms {
-  val stringToDoublePrism = Prism[String, Double](input => {
-    val regex = "^(([1-9][0-9]*)|0)\\.(([0-9]*[1-9])|0)$"r
-
-    println(s"bazinga: $input"); Try(input.toDouble).toOption
-  }){ d =>
-    val str = d.toString
-    if(str.endsWith(".0")) {
-      str.dropRight(2)
-    } else {
-      str
-    }
-  }
-  val doubleToIntPrism    = Prism[Double, Int]{
-    case s if s.isValidInt => Some(s.toInt)
-    case _ => None
-  }(_.toDouble)
+  // TODO: change it
+  val stringToIntPrism = Prism[String, Int](str => Try(str.toInt).toOption)(_.toString)
+  val intToPercentPrism = Prism[Int, Percent](i => Percent.fromInt(i))(_.value)
 }
 
 object NaivePrismExample {
@@ -36,20 +37,20 @@ object NaivePrismExample {
 
   def main(args: Array[String]): Unit = {
     println("basic operations for inputs parsable to Double")
-    println(stringToDoublePrism.getOption("22.0"))
-    println(stringToDoublePrism.set(40.0)("22.0"))
-    println(stringToDoublePrism.modify(_ + 1.0)("22.0"))
+    println(stringToIntPrism.getOption("22"))
+    println(stringToIntPrism.set(40)("22"))
+    println(stringToIntPrism.modify(_ + 1)("22"))
 
     println("basic operations for inputs not parsable to Double")
-    println(stringToDoublePrism.getOption("someString"))
-    println(stringToDoublePrism.set(40.0)("someString"))
-    println(stringToDoublePrism.modify(_ + 1.0)("someString"))
+    println(stringToIntPrism.getOption("someString"))
+    println(stringToIntPrism.set(40)("someString"))
+    println(stringToIntPrism.modify(_ + 1)("someString"))
 
     println("basic operations for inputs not parsable to Double - option variants of methods")
-    println(stringToDoublePrism.setOption(40.0)("22.1"))
-    println(stringToDoublePrism.modifyOption(_ + 1.0)("22.1"))
+    println(stringToIntPrism.setOption(40)("22"))
+    println(stringToIntPrism.modifyOption(_ + 1)("22"))
 
-    val stringToIntPrism = stringToDoublePrism.composePrism(doubleToIntPrism)
+    val stringToPercent = stringToIntPrism.composePrism(intToPercentPrism)
     val testPrism = printOutput(stringToIntPrism.getOption _)_
 
     testPrism("someString")
