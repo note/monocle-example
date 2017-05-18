@@ -12,6 +12,25 @@ object NaivePrisms {
   }(_.toDouble)
 }
 
+object DowncastingPrisms {
+  val stringToDoublePrism = Prism[String, Double](input => {
+    val regex = "^(([1-9][0-9]*)|0)\\.(([0-9]*[1-9])|0)$"r
+
+    println(s"bazinga: $input"); Try(input.toDouble).toOption
+  }){ d =>
+    val str = d.toString
+    if(str.endsWith(".0")) {
+      str.dropRight(2)
+    } else {
+      str
+    }
+  }
+  val doubleToIntPrism    = Prism[Double, Int]{
+    case s if s.isValidInt => Some(s.toInt)
+    case _ => None
+  }(_.toDouble)
+}
+
 object NaivePrismExample {
   import NaivePrisms._
 
