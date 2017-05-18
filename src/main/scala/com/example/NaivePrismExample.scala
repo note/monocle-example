@@ -5,9 +5,9 @@ import monocle.Prism
 import scala.util.Try
 
 object NaivePrisms {
-  val stringToDoublePrism = Prism[String, Double](input => Try(input.toDouble).toOption)(_.toString)
-  val doubleToLongPrism    = Prism[Double, Long]{
-    case s if s % 1 == 0 => Some(s.toLong)
+  val stringToDoublePrism = Prism[String, Double](input => {println(s"bazinga: $input"); Try(input.toDouble).toOption})(_.toString)
+  val doubleToIntPrism    = Prism[Double, Int]{
+    case s if s.isValidInt => Some(s.toInt)
     case _ => None
   }(_.toDouble)
 }
@@ -30,12 +30,12 @@ object NaivePrismExample {
     println(stringToDoublePrism.setOption(40.0)("22.1"))
     println(stringToDoublePrism.modifyOption(_ + 1.0)("22.1"))
 
-    val stringToLongPrism: Prism[String, Long] = stringToDoublePrism.composePrism(doubleToLongPrism)
-    val testPrism = printOutput(stringToLongPrism.getOption _)_
+    val stringToIntPrism = stringToDoublePrism.composePrism(doubleToIntPrism)
+    val testPrism = printOutput(stringToIntPrism.getOption _)_
 
-//    testPrism("someString")
-//    testPrism("22.3")
-//    testPrism("22.0")
+    testPrism("someString")
+    testPrism("22.3")
+    testPrism("22.0")
   }
 
   private def printOutput[T](callback: String => T)(input: String): Unit = {

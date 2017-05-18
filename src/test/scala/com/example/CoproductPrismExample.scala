@@ -6,7 +6,7 @@ import org.scalatest.{Matchers, WordSpec}
 /**
   * Prism for Coproduct - in that case modelled with sealed trait hierarchy.
   *
-  * Example taken from http://julien-truffaut.github.io/Monocle/optics/prism.html
+  * Example idea taken from http://julien-truffaut.github.io/Monocle/optics/prism.html
   */
 
 sealed trait Json
@@ -19,14 +19,25 @@ class CoproductPrismExample extends WordSpec with Matchers {
   val stringPrism = Prism.partial[Json, String]{case JStr(v) => v}(JStr)
 
   "stringPrism" should {
-    "change me" in {
+    "work for primitive operations" in {
       stringPrism.getOption(JStr("someString")) should equal(Some("someString"))
       stringPrism.reverseGet("someString") should equal(JStr("someString"))
-      // TODO: remove following line
-//      stringPrism.set("someString")(JStr("hello")) should equal(JStr("someString"))
 
       // prism `getOption` returns None if does not succeed
       stringPrism.getOption(JNull) should equal(None)
+    }
+
+    "work for modify" in {
+      val someJson: Json = JStr("someString")
+
+      val withPrism = stringPrism.modify(_.toUpperCase)(someJson)
+
+      val withPatternMatch = someJson match {
+        case JStr(s)      => JStr(s.toUpperCase)
+        case anythingElse => anythingElse
+      }
+
+      withPrism should equal(withPatternMatch)
     }
   }
 }
