@@ -27,9 +27,9 @@ object NaivePrisms {
 }
 
 object DowncastingPrisms {
+  val regex = "(-?[1-9][0-9]*)|0".r
+
   val stringToIntPrism = Prism[String, Int]{ str =>
-    println("bazinga: " + str)
-    val regex = "(-?[1-9][0-9]*)|0".r
     if(regex.pattern.matcher(str).matches) {
       Try(str.toInt).toOption
     } else {

@@ -11,6 +11,6 @@ class DowncastingPrismSpec extends OpticsSpec {
 
   val stringToIntRuleSet = PrismTests(DowncastingPrisms.stringToIntPrism)
   val intToPercentRuleSet = PrismTests(DowncastingPrisms.intToPercentPrism)
-  checkLaws("stringToIntPrism", stringToIntRuleSet)
+  checkLaws("stringToIntPrism", stringToIntRuleSet, 15)
   checkLaws("intToPercentPrism", intToPercentRuleSet)
 }
