@@ -23,6 +23,8 @@ object Percent {
 }
 
 object NaivePrisms {
+  // this is not a lawful Prism but in naive version we don't care about it
+  // for lawful Prism take a look at DowncastingPrisms
   val stringToIntPrism = Prism[String, Int](str => Try(str.toInt).toOption)(_.toString)
   val intToPercentPrism = Prism[Int, Percent](i => Percent.fromInt(i))(_.value)
 }

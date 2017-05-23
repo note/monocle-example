@@ -30,12 +30,14 @@ class CoproductPrismExample extends WordSpec with Matchers {
     "work for modify" in {
       val someJson: Json = JStr("someString")
 
-      val withPrism = stringPrism.modify(_.toUpperCase)(someJson)
-
+      // first let's try to capitalize JStr with pattern match
       val withPatternMatch = someJson match {
         case JStr(s)      => JStr(s.toUpperCase)
         case anythingElse => anythingElse
       }
+
+      // now the same thing with Prism
+      val withPrism = stringPrism.modify(_.toUpperCase)(someJson)
 
       withPrism should equal(withPatternMatch)
     }

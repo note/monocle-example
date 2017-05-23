@@ -3,19 +3,12 @@ package com.example
 import monocle._
 import org.scalatest.{Matchers, WordSpec}
 
-case class Meter(whole: Int, fraction: Int) {
-  override def toString: String = {
-    s"$whole.${fraction}m"
-  }
-}
+// business entities
+case class Meter(whole: Int, fraction: Int)
+case class Centimeter(whole: Int)
 
-case class Centimeter(whole: Int) {
-  override def toString: String = {
-    s"${whole}cm"
-  }
-}
-
-class IsoExample extends WordSpec with Matchers {
+// Optics
+object PhysicalUnitsOptics {
   val centimeterToMeterIso = Iso[Centimeter, Meter] { cm =>
     Meter(cm.whole / 100, cm.whole % 100)
   }{ m =>
@@ -28,6 +21,10 @@ class IsoExample extends WordSpec with Matchers {
     composeIso(intCentimeter).
     composeIso(centimeterToMeterIso).
     composeLens(wholeMeterLens)
+}
+
+class IsoExample extends WordSpec with Matchers {
+  import PhysicalUnitsOptics._
 
   "centimeterToMeterIso" should {
     "work" in {
