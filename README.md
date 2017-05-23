@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/note/monocle-example.svg)](https://travis-ci.org/note/monocle-example.svg?branch=master)
+
 This is accompanying repository to post Optics beyond Lenses (TODO: add link when available)
 
 ## How to navigate the repo
