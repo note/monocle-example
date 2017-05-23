@@ -1,4 +1,4 @@
-package com.example.common
+package com.example.laws.common
 
 import org.scalactic.anyvals.PosZInt
 import org.scalatest.FlatSpec

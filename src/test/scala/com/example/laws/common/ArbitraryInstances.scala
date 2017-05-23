@@ -1,4 +1,4 @@
-package com.example.common
+package com.example.laws.common
 
 import com.example.Percent
 import org.scalacheck.{Arbitrary, Cogen, Gen}

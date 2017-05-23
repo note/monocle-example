@@ -1,7 +1,7 @@
 package com.example.laws
 
 import com.example.{Duration, DurationOptics}
-import com.example.common.OpticsSpec
+import com.example.laws.common.OpticsSpec
 import monocle.law.discipline.LensTests
 import org.scalacheck.{Arbitrary, Gen}
 

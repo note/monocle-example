@@ -1,7 +1,7 @@
 package com.example.laws
 
 import com.example.NaivePrisms
-import com.example.common.OpticsSpec
+import com.example.laws.common.OpticsSpec
 import monocle.law.discipline.PrismTests
 
 class NaivePrismSpec extends OpticsSpec {
