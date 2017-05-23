@@ -10,6 +10,9 @@ class NaivePrismSpec extends OpticsSpec {
 
   val stringToIntRuleSet = PrismTests(NaivePrisms.stringToIntPrism)
   val intToPercentRuleSet = PrismTests(NaivePrisms.intToPercentPrism)
-  checkLaws("stringToIntPrism", stringToIntRuleSet, 15)
-  checkLaws("intToPercentPrism", intToPercentRuleSet)
+
+  // Since those are NaivePrisms they're not lawful and would fail the tests
+  // uncomment following lines to see them failing:
+//  checkLaws("stringToIntPrism", stringToIntRuleSet, 15)
+//  checkLaws("intToPercentPrism", intToPercentRuleSet)
 }

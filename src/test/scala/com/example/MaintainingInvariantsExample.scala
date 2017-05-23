@@ -76,4 +76,8 @@ class MaintainingInvariantsExample extends FlatSpec with Matchers {
     secondsL.modify(_ + (121 * 60))(Duration(3, 0, 0)) should equal (Duration(5, 1, 0))
     secondsL.modify(_ + (121 * 60) + 17)(Duration(3, 0, 0)) should equal (Duration(5, 1, 17))
   }
+
+  "remove me" should "not work" in {
+
+  }
 }
