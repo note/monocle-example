@@ -5,8 +5,6 @@ import org.scalatest.{Matchers, WordSpec}
 import io.circe.optics.JsonPath._
 
 class CirceExample extends WordSpec with Matchers {
-  val street: JsonPath = root.order.address.street
-
   "JsonPath" should {
     "should work as non-optics equivalent" in {
       val input = referenceJson("abc")
@@ -28,7 +26,7 @@ class CirceExample extends WordSpec with Matchers {
 
   // now with optics:
   def modifyWithOptics(json: io.circe.Json): io.circe.Json =
-    street.string.modify(_.toUpperCase)(json)
+    root.order.address.street.string.modify(_.toUpperCase)(json)
 
   def referenceJson(streetName: String) =
     io.circe.parser.parse(s"""
