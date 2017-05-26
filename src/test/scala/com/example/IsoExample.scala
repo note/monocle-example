@@ -17,7 +17,7 @@ object PhysicalUnitsOptics {
 
   val intCentimeter     = Iso[Int, Centimeter](Centimeter.apply)(_.whole)
   val wholeMeterLens    = Lens[Meter, Int](_.whole)(newWhole => prevMeter => prevMeter.copy(whole = newWhole))
-  val stringToWholeMeter = DowncastingPrisms.stringToIntPrism.
+  val stringToWholeMeter: Optional[String, Int] = DowncastingPrisms.stringToIntPrism.
     composeIso(intCentimeter).
     composeIso(centimeterToMeterIso).
     composeLens(wholeMeterLens)
