@@ -12,7 +12,6 @@ case class Fahrenheit(value: Double)
 case class Celsius(value: Double)
 
 object TemperatureOptics {
-  import TemperatureOptics._
   import cats.instances.option._
 
   val stringToFahrenheit =
