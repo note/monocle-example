@@ -1,6 +1,8 @@
 package com.example
 
-import monocle.{Fold, Iso, PPrism, Prism}
+import cats.data.Kleisli
+import cats.syntax.option._
+import monocle.{Iso, Prism}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.Try
@@ -10,11 +12,14 @@ case class Fahrenheit(value: Double)
 case class Celsius(value: Double)
 
 object TemperatureOptics {
+  import TemperatureOptics._
+  import cats.instances.option._
+
   val stringToFahrenheit =
-    Prism[String, Fahrenheit](input => Try(input.toDouble).toOption.map(d => Fahrenheit(d)))(_.toString)
+    Prism[String, Fahrenheit](input => Try(input.toDouble).toOption.map(d => Fahrenheit(d)))(_.value.toString)
 
   val stringToCelsius =
-    Prism[String, Celsius](input => Try(input.toDouble).toOption.map(d => Celsius(d)))(_.toString)
+    Prism[String, Celsius](input => Try(input.toDouble).toOption.map(d => Celsius(d)))(_.value.toString)
 
   val fahrenheitToCelsius =
     Iso[Fahrenheit, Celsius]{ fahrenheit =>
@@ -26,6 +31,24 @@ object TemperatureOptics {
       val fahrenheitValue = celsius.value * ratio + 32
       Fahrenheit(fahrenheitValue)
     }
+
+  val celsiusToFahrenheit = fahrenheitToCelsius.reverse
+
+  val celsiusStringToFahrenheitString = {
+    val celsStringToFahr = Kleisli(stringToCelsius.composeIso(celsiusToFahrenheit).getOption)
+    val fahrToString = Kleisli((stringToFahrenheit.reverseGet _).andThen(_.some))
+    val composed: Kleisli[Option, String, String] = celsStringToFahr.andThen(fahrToString)
+
+    composed.run
+  }
+
+  val fahrenheitStringToCelsiusString = {
+    val fahrStringToCels = Kleisli(stringToFahrenheit.composeIso(fahrenheitToCelsius).getOption)
+    val celsiusToString = Kleisli((stringToCelsius.reverseGet _).andThen(_.some))
+    val composed = fahrStringToCels.andThen(celsiusToString)
+
+    composed.run
+  }
 }
 
 /**
@@ -34,15 +57,21 @@ object TemperatureOptics {
 class TemperatureExample extends WordSpec with Matchers {
   import TemperatureOptics._
 
-  "composition" should {
-    "produce Celsius to Fahrenheit Prism" in {
-      // TODO: rewrite with Kleisli
-      val a = stringToCelsius.composeIso(fahrenheitToCelsius.reverse).getOption _
-      val b: (String) => Option[String] = a andThen (_.map(stringToFahrenheit.reverseGet))
+  "celsiusStringToFahrenheitString" should {
+    "work" in {
+      celsiusStringToFahrenheitString("20") should equal ("68.0".some)
+      celsiusStringToFahrenheitString("0") should equal ("32.0".some)
+      celsiusStringToFahrenheitString("30") should equal ("86.0".some)
+      celsiusStringToFahrenheitString("10.5") should equal ("50.9".some)
     }
+  }
 
-    "produce Celsius to Fahrenheit Prism" in {
-      stringToCelsius.composeIso(fahrenheitToCelsius.reverse)
+  "fahrenheitStringToCelsiusString" should {
+    "work" in {
+      fahrenheitStringToCelsiusString("68") should equal ("20.0".some)
+      fahrenheitStringToCelsiusString("32") should equal ("0.0".some)
+      fahrenheitStringToCelsiusString("86") should equal ("30.0".some)
+      fahrenheitStringToCelsiusString("50.9") should equal ("10.5".some)
     }
   }
 }
