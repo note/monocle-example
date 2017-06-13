@@ -3,8 +3,6 @@ package com.example
 import monocle._
 import org.scalatest.{FlatSpec, Matchers}
 
-import scalaz.{Applicative, \/}
-
 sealed trait OperationError
 
 case class ErrorA(message: String, details: DetailedErrorA) extends OperationError
@@ -13,7 +11,7 @@ case object ErrorB extends OperationError
 case class DetailedErrorA(detailedMessage: String)
 
 object ErrorOptics {
-  // That's straighforward approach, not recommended but shows the essence of Optional:
+  // That's straightforward approach, not recommended but shows the essence of Optional:
   val detailedErrorA = Optional[OperationError, String]{
     case err: ErrorA => Some(err.details.detailedMessage)
     case _ => None
@@ -69,7 +67,5 @@ class OptionalExample extends FlatSpec with Matchers {
     }
   }
 
+  case class Example(input: OperationError, expectedOutput: Option[OperationError])
 }
-
-case class Example(input: OperationError, expectedOutput: Option[OperationError])
-
