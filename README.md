@@ -1,6 +1,6 @@
 [![Build Status](https://api.travis-ci.org/note/monocle-example.svg)](https://travis-ci.org/note/monocle-example)
 
-This is accompanying repository to post Optics beyond Lenses (TODO: add link when available)
+This is accompanying repository to post Optics beyond Lenses: https://blog.scalac.io/optics-beyond-lenses-with-monocle.html
 
 ## How to navigate the repo
 

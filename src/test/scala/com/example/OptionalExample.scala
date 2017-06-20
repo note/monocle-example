@@ -3,16 +3,16 @@ package com.example
 import monocle._
 import org.scalatest.{FlatSpec, Matchers}
 
-sealed trait OperationError
+sealed trait Error
 
-case class ErrorA(message: String, details: DetailedErrorA) extends OperationError
-case object ErrorB extends OperationError
+case class ErrorA(message: String, details: DetailedErrorA) extends Error
+case object ErrorB extends Error
 
 case class DetailedErrorA(detailedMessage: String)
 
 object ErrorOptics {
   // That's straightforward approach, not recommended but shows the essence of Optional:
-  val detailedErrorA = Optional[OperationError, String]{
+  val detailedErrorA = Optional[Error, String]{
     case err: ErrorA => Some(err.details.detailedMessage)
     case _ => None
   }{ newDetailedMsg => from =>
@@ -23,7 +23,7 @@ object ErrorOptics {
   }
 
   // Better approach is to get `Optional[OperationError, String]` by composing Prism and Lens:
-  val errorA = Prism.partial[OperationError, ErrorA] {
+  val errorA = Prism.partial[Error, ErrorA] {
     case err: ErrorA => err
   }(identity)
 
@@ -33,7 +33,7 @@ object ErrorOptics {
   val detailedErrorMsg =
     Lens[DetailedErrorA, String](_.detailedMessage)(newMsg => from => from.copy(detailedMessage = newMsg))
 
-  val composedDetailedErrorA: Optional[OperationError, String] =
+  val composedDetailedErrorA: Optional[Error, String] =
     errorA.composeLens(detailedError.composeLens(detailedErrorMsg))
 }
 
@@ -67,5 +67,5 @@ class OptionalExample extends FlatSpec with Matchers {
     }
   }
 
-  case class Example(input: OperationError, expectedOutput: Option[OperationError])
+  case class Example(input: Error, expectedOutput: Option[Error])
 }
